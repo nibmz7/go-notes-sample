@@ -6,8 +6,8 @@ import (
 
 type Note struct {
 	ID      string `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
 }
 
 func (note *Note) ToString() (string, error) {
