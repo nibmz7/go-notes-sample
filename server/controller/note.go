@@ -7,20 +7,22 @@ import (
 	"nibmz7/go-notes-sample/server/service"
 )
 
-type NoteController struct {
-	service *service.NotesService
+var (
+	NoteController noteControllerInterface = &noteController{}
+)
+
+type noteController struct{}
+
+type noteControllerInterface interface {
+	PostNote(*gin.Context)
 }
 
-func NewNoteController() *NoteController {
-	return &NoteController{service: service.NewNotesService()}
-}
-
-func (controller *NoteController) PostNote(context *gin.Context) {
+func (controller *noteController) PostNote(context *gin.Context) {
 	var note model.Note
 	if err := context.ShouldBindJSON(&note); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.service.AddNote(note)
+	service.NoteService.AddNote(note)
 	context.Status(http.StatusOK)
 }

@@ -7,13 +7,17 @@ import (
 
 var notes = make(map[string]model.Note)
 
-type NotesService struct{}
+var (
+	NoteService noteServiceInterface = &noteService{}
+)
 
-func NewNotesService() *NotesService {
-	return &NotesService{}
+type noteService struct{}
+
+type noteServiceInterface interface {
+	AddNote(model.Note)
 }
 
-func (notesService *NotesService) AddNote(note model.Note) {
+func (notesService *noteService) AddNote(note model.Note) {
 	note.ID = uuid.New().String()
 	notes[note.ID] = note
 }
