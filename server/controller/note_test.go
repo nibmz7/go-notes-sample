@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
@@ -13,37 +12,43 @@ import (
 )
 
 var (
-	postNoteService func(note model.Note)
+	addNote func(note *model.Note)
 )
 
-type noteServiceMock struct{}
+type mockNoteService struct {}
 
-func (notesService *noteServiceMock) AddNote(note model.Note) {
-	postNoteService(note)
+func newMockNoteService() service.NoteService {
+	return &mockNoteService{}
+}
+
+func (ns *mockNoteService) AddNote(note *model.Note) {
+	addNote(note)
 }
 
 func TestPostNote(t *testing.T) {
-	service.NoteService = &noteServiceMock{}
-	postNoteService = func(note model.Note) {
-		fmt.Println("note added")
+	service.MakeNoteService = newMockNoteService
+	addNote = func(note *model.Note) {
+		note.ID = "123"
 	}
-	
+
 	router := gin.Default()
-	router.POST(ApiNote, NoteController.PostNote)
-	ts := httptest.NewServer(router)
+	jsonBody := `{"title": "the title", "content": "Some content"}`
+	req, _ := http.NewRequest(http.MethodPost, ApiNote, bytes.NewBufferString(jsonBody))
+	rr := httptest.NewRecorder()
+	noteController := NewNoteController()
+	router.POST(ApiNote, noteController.PostNote)
+	router.ServeHTTP(rr, req)
 
-	defer ts.Close()
-
-	values := map[string]string{"title": "Some title", "content": "Some content"}
-
-	jsonValue, _ := json.Marshal(values)
-	resp, err := http.Post(fmt.Sprintf("%s/note", ts.URL), "application/json; charset=utf-8", bytes.NewBuffer(jsonValue))
+	var note model.Note
+	err := json.Unmarshal(rr.Body.Bytes(), &note)
 
 	if err != nil {
-		t.Fatalf("Expected no error, got %v", err)
+		t.Errorf("this is the error: %v\n", err)
 	}
 
-	if resp.StatusCode != 200 {
-		t.Fatalf("Expected status code 200, got %v", resp.StatusCode)
+	if note.ID != "123" {
+		t.Errorf("ID is not 124: ID value: %s\n", note.ID)
+
 	}
+
 }

@@ -7,6 +7,7 @@ import (
 
 func SetupServer() *gin.Engine {
 	router := gin.Default()
-	router.POST(controller.ApiNote, controller.NoteController.PostNote)
+	noteController := controller.NewNoteController()
+	router.POST(controller.ApiNote, noteController.PostNote)
 	return router
 }

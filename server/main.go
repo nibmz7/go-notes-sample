@@ -1,17 +1,9 @@
 package main
 
 import (
-	_ "fmt"
-	"github.com/gin-gonic/gin"
-	"nibmz7/go-notes-sample/server/controller"
+	"nibmz7/go-notes-sample/server/router"
 )
 
 func main() {
-	SetupServer().Run(":3000")
-}
-
-func SetupServer() *gin.Engine {
-	router := gin.Default()
-	router.POST(controller.ApiNote, controller.NoteController.PostNote)
-	return router
+	router.SetupServer().Run(":3000")
 }

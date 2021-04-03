@@ -5,19 +5,21 @@ import (
 	"nibmz7/go-notes-sample/server/model"
 )
 
-var notes = make(map[string]model.Note)
-
-var (
-	NoteService noteServiceInterface = &noteService{}
-)
-
-type noteService struct{}
-
-type noteServiceInterface interface {
-	AddNote(model.Note)
+type noteService struct {
+	notes map[string]model.Note
 }
 
-func (notesService *noteService) AddNote(note model.Note) {
+type NoteService interface {
+	AddNote(note *model.Note)
+}
+
+var MakeNoteService func() NoteService = newNoteService
+
+func newNoteService() NoteService {
+	return &noteService{notes: make(map[string]model.Note)}
+}
+
+func (ns *noteService) AddNote(note *model.Note) {
 	note.ID = uuid.New().String()
-	notes[note.ID] = note
+	ns.notes[note.ID] = *note
 }
