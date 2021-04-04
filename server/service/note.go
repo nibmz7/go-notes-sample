@@ -38,9 +38,14 @@ func newNoteService() NoteService {
 func (ns *noteService) AddNote(note *model.Note) {
 	note.ID = uuid.New().String()
 	ns.notes[note.ID] = *note
+	noteEvent := NoteEvent{Type: "Added", Data: *note}
 	go func() {
 		for client := range ns.clients {
-			client.Channel <- NoteEvent{Type: "Added", Data: *note}
+			select {
+			case client.Channel <- noteEvent:
+			default:
+				ns.Unsubscribe(client)
+			}
 		}
 	}()
 }
@@ -50,5 +55,6 @@ func (ns *noteService) Subscribe(client *NoteClient) {
 }
 
 func (ns *noteService) Unsubscribe(client *NoteClient) {
+	close(client.Channel)
 	delete(ns.clients, client)
 }
