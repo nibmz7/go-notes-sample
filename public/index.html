@@ -6,11 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
+        rel="stylesheet">
 </head>
 
 <body>
     <div id="root"></div>
+
+    <script>
+        console.log("dssdds");
+        conn = new WebSocket("ws://localhost:8080/ws");
+        conn.onopen = (evt) => {
+            console.log("sddsddsddssd")
+        }
+        conn.onerror = (evt) => {
+            console.log("sddsddsddssd")
+        }
+        conn.onclose = function (evt) {
+            console.log("sddsddsddssd")
+
+            var item = document.createElement("div");
+            item.innerHTML = "<b>Connection closed.</b>";
+            appendLog(item);
+        };
+        conn.onmessage = function (evt) {
+            console.log("sddsddsddssd")
+            var messages = evt.data.split('\n');
+            for (var i = 0; i < messages.length; i++) {
+                var item = document.createElement("div");
+                item.innerText = messages[i];
+                appendLog(item);
+            }
+        };
+    </script>
 </body>
 
 </html>

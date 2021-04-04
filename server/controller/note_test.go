@@ -12,17 +12,24 @@ import (
 )
 
 var (
-	addNote func(note *model.Note)
+	addNote   func(note *model.Note)
+	subscribe func() chan service.NoteEvent
 )
 
-type mockNoteService struct {}
+type mockNoteService struct {
+	channel chan service.NoteEvent
+}
 
 func newMockNoteService() service.NoteService {
-	return &mockNoteService{}
+	return &mockNoteService{channel: make(chan service.NoteEvent)}
 }
 
 func (ns *mockNoteService) AddNote(note *model.Note) {
 	addNote(note)
+}
+
+func (ns *mockNoteService) Subscribe() chan service.NoteEvent {
+	return subscribe()
 }
 
 func TestPostNote(t *testing.T) {
@@ -52,3 +59,4 @@ func TestPostNote(t *testing.T) {
 	}
 
 }
+

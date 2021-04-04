@@ -20,6 +20,11 @@ module.exports = merge(common, {
       warnings: true,
     },
     proxy: {
+      '/ws': {
+        target: 'ws://localhost:3000/note',
+        pathRewrite: { '^/ws': '' },
+        ws: true
+     },
       '/api': {
         target: 'http://localhost:3000',
         pathRewrite: { '^/api': '' },
