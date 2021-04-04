@@ -65,6 +65,7 @@ func wshandler(controller *NoteController, w http.ResponseWriter, r *http.Reques
 				fmt.Println(err)
 				return
 			}
+			println("SENDING EVENT")
 			conn.WriteMessage(websocket.TextMessage, b)
 		}
 	}

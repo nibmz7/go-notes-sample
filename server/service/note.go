@@ -30,6 +30,7 @@ func (ns *noteService) AddNote(note *model.Note) {
 	note.ID = uuid.New().String()
 	ns.notes[note.ID] = *note
 	ns.channel <- NoteEvent{Type: "Added", Data: *note}
+	println("NOTE ADDED");
 }
 
 func (ns *noteService) Subscribe() chan NoteEvent {
